@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "name": "C#: ChatBot",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}\\ChatBot\\ChatBot.csproj",
+            "launchConfigurationId": "TargetFramework=;ChatBot"
+        }
+    ]
+}
