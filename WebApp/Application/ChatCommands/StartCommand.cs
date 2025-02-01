@@ -22,7 +22,8 @@ namespace WebApp.Application.ChatCommands
             InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(
             [
                 [ InlineKeyboardButton.WithCallbackData("✅ Войти", "login"),  InlineKeyboardButton.WithCallbackData("🔢 Скалькулировать", "calculate") ],
-                [ InlineKeyboardButton.WithUrl("🌐 Открыть сайт", "https://www.youtube.com/watch?v=mDFBTdToRmw") , InlineKeyboardButton.WithCallbackData("🍣 SUSI", "susi") ]
+                [ InlineKeyboardButton.WithUrl("🌐 Открыть сайт", "https://www.youtube.com/watch?v=mDFBTdToRmw") ],
+                [ InlineKeyboardButton.WithCallbackData("🍣 SUSI", "susi") ]
             ]);
 
             ChatId chatId = new ChatId(message.From.Id);
