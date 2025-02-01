@@ -7,7 +7,7 @@ namespace WebApp.Application.ChatCommands
     [TelegramCommand("/register")]
     internal sealed class RegisterCommand : ITelegramCommand
     {
-        ICustomerRepository CustomerRepository { get; set; }
+        private ICustomerRepository CustomerRepository { get; }
 
         public RegisterCommand(ICustomerRepository customerRepository)
         {

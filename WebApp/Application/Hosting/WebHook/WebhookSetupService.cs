@@ -7,32 +7,32 @@ namespace WebApp.Application.Hosting.WebHook
     /// </summary>
     internal class WebhookSetupService : IHostedService
     {
-        private readonly ITelegramBotClient _botClient;
-        private readonly ILogger<WebhookSetupService> _logger;
-        private readonly IConfiguration _configuration;
+        private ITelegramBotClient BotClient { get; }
+        private ILogger<WebhookSetupService> Logger { get; }
+        private IConfiguration Configuration { get; }
 
         public WebhookSetupService(ITelegramBotClient botClient, IConfiguration configuration, ILogger<WebhookSetupService> logger)
         {
-            _botClient = botClient;
-            _configuration = configuration;
-            _logger = logger;
+            BotClient = botClient;
+            Configuration = configuration;
+            Logger = logger;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            string webhookUrl = _configuration["Telegram:WebhookUrl"]!;
+            string webhookUrl = Configuration["Telegram:WebhookUrl"]!;
 
             // Сначала удаляем текущий вебхук
-            await _botClient.DeleteWebhook(cancellationToken: cancellationToken);
+            await BotClient.DeleteWebhook(cancellationToken: cancellationToken);
 
             if (string.IsNullOrWhiteSpace(webhookUrl))
             {
-                _logger.LogError("Webhook URL is missing in configuration.");
+                Logger.LogError("Webhook URL is missing in configuration.");
                 return;
             }
 
-            _logger.LogInformation($"Setting webhook: {webhookUrl}");
-            await _botClient.SetWebhook(webhookUrl, dropPendingUpdates: true, cancellationToken: cancellationToken);
+            Logger.LogInformation($"Setting webhook: {webhookUrl}");
+            await BotClient.SetWebhook(webhookUrl, dropPendingUpdates: true, cancellationToken: cancellationToken);
 
         }
 

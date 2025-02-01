@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace WebApp.Application.Hosting.WebHook.Controllers
@@ -8,12 +7,10 @@ namespace WebApp.Application.Hosting.WebHook.Controllers
     [Route("api/telegram")]
     public class TelegramWebhookController : ControllerBase
     {
-        private readonly ITelegramBotClient BotClient;
-        private readonly UpdateDistributor UpdateDistr;
+        private UpdateDistributor UpdateDistr { get; }
 
-        public TelegramWebhookController(ITelegramBotClient botClient, UpdateDistributor updateDistr)
+        public TelegramWebhookController(UpdateDistributor updateDistr)
         {
-            BotClient = botClient;
             UpdateDistr = updateDistr;
         }
 

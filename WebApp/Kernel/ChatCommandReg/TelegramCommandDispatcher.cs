@@ -12,13 +12,14 @@ namespace WebApp.Kernel.ChatCommandReg
     public class TelegramCommandDispatcher : ISetup
     {
         private readonly Dictionary<string, Type> _commands = new();
-        private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<TelegramCommandDispatcher> _logger;
+
+        private IServiceProvider ServiceProvider { get; }
+        private ILogger<TelegramCommandDispatcher> Logger { get; }
 
         public TelegramCommandDispatcher(IServiceProvider serviceProvider, ILogger<TelegramCommandDispatcher> logger)
         {
-            _serviceProvider = serviceProvider;
-            _logger = logger;
+            ServiceProvider = serviceProvider;
+            Logger = logger;
         }
 
         public async Task HandleCommand(Update update, CancellationToken cancellationToken)
@@ -32,12 +33,12 @@ namespace WebApp.Kernel.ChatCommandReg
                 try
                 {
                     // TODO logging
-                    await ((ITelegramCommand)_serviceProvider.GetRequiredService(typeCommand))
+                    await ((ITelegramCommand)ServiceProvider.GetRequiredService(typeCommand))
                         .Execute(update.Message, cancellationToken);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Unhanldled exception Telegram-Command: {commandKey}");
+                    Logger.LogError(ex, $"Unhanldled exception Telegram-Command: {commandKey}");
                 }
             }
         }

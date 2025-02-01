@@ -13,16 +13,17 @@ namespace WebApp.Kernel.ButtonHandlerReg
     public class ButtonHandlerDispatcher : ISetup
     {
         private readonly Dictionary<string, Type> _handlers = new();
-        private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<ButtonHandlerDispatcher> _logger;
-        private readonly ITelegramBotClient _telegramClient;
+
+        private IServiceProvider ServiceProvider { get; }
+        private ILogger<ButtonHandlerDispatcher> Logger { get; }
+        private ITelegramBotClient TelegramClient { get; }
 
         public ButtonHandlerDispatcher(IServiceProvider serviceProvider, ILogger<ButtonHandlerDispatcher> logger,
             ITelegramBotClient telegramClient)
         {
-            _serviceProvider = serviceProvider;
-            _logger = logger;
-            _telegramClient = telegramClient;
+            ServiceProvider = serviceProvider;
+            Logger = logger;
+            TelegramClient = telegramClient;
         }
 
         public async Task Handle(string callbackKey, Update update, CancellationToken cancellationToken)
@@ -34,16 +35,16 @@ namespace WebApp.Kernel.ButtonHandlerReg
                 try
                 {
                     // TODO logging 
-                    await ((IButtonHandler)_serviceProvider.GetRequiredService(typeCommand))
+                    await ((IButtonHandler)ServiceProvider.GetRequiredService(typeCommand))
                         .Execute(update.CallbackQuery);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Unhadnled exception Telegram ButtonHandler: {callbackKey}");
+                    Logger.LogError(ex, $"Unhadnled exception Telegram ButtonHandler: {callbackKey}");
                 }
                 finally
                 {
-                    await _telegramClient.AnswerCallbackQuery(update.CallbackQuery.Id);
+                    await TelegramClient.AnswerCallbackQuery(update.CallbackQuery.Id);
                 }
             }
         }

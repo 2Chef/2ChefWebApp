@@ -7,11 +7,11 @@ namespace WebApp.Application.ButtonHandlers
     [ButtonHandler("test")]
     internal sealed class TestHandler : IButtonHandler
     {
-        private readonly ITelegramBotClient _telegramClient;
+        private readonly ITelegramBotClient TelegramClient;
 
         public TestHandler(ITelegramBotClient telegramClient)
         {
-            _telegramClient = telegramClient;
+            TelegramClient = telegramClient;
         }
 
         /// <summary>
@@ -19,7 +19,7 @@ namespace WebApp.Application.ButtonHandlers
         /// </summary>
         public async Task Execute(CallbackQuery callbackData)
         {
-            await _telegramClient.SendMessage(callbackData.From.Id, "Test success");
+            await TelegramClient.SendMessage(callbackData.From.Id, "Test success");
         }
     }
 }

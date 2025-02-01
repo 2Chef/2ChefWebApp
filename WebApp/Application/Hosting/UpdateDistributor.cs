@@ -10,33 +10,33 @@ namespace WebApp.Application.Hosting
     [DiReg(ServiceLifetime.Singleton)]
     public class UpdateDistributor : IUpdateHandler
     {
-        private readonly ILogger<UpdateDistributor> _logger;
-        private readonly TelegramCommandDispatcher _commandDispatcher;
-        private readonly ButtonHandlerDispatcher _buttonHandlerDispatcher;
+        private ILogger<UpdateDistributor> Logger { get; }
+        private TelegramCommandDispatcher CommandDispatcher { get; }
+        private ButtonHandlerDispatcher ButtonHandlerDispatcher { get; }
 
         public UpdateDistributor(ILogger<UpdateDistributor> logger,
             TelegramCommandDispatcher commandDispatcher, ButtonHandlerDispatcher buttonHandler)
         {
-            _logger = logger;
-            _commandDispatcher = commandDispatcher;
-            _buttonHandlerDispatcher = buttonHandler;
+            Logger = logger;
+            CommandDispatcher = commandDispatcher;
+            ButtonHandlerDispatcher = buttonHandler;
         }
 
         public async Task HandleUpdateAsync(Update update, CancellationToken cancellationToken)
         {
             if (update?.Message is not null)
             {
-                await _commandDispatcher.HandleCommand(update, CancellationToken.None);
+                await CommandDispatcher.HandleCommand(update, CancellationToken.None);
             }
             else if (update?.CallbackQuery?.Data is not null)
             {
-                await _buttonHandlerDispatcher.Handle(update.CallbackQuery.Data, update, CancellationToken.None);
+                await ButtonHandlerDispatcher.Handle(update.CallbackQuery.Data, update, CancellationToken.None);
             }
         }
 
         public async Task HandleErrorAsync(Exception exception, HandleErrorSource source, CancellationToken cancellationToken)
         {
-            _logger.LogError(exception.Message);
+            Logger.LogError(exception.Message);
         }
 
         Task IUpdateHandler.HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken) =>
