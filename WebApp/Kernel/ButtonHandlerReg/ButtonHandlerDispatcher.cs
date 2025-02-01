@@ -43,7 +43,7 @@ namespace WebApp.Kernel.ButtonHandlerReg
                 }
                 finally
                 {
-                    await _telegramClient.AnswerCallbackQuery(callbackKey);
+                    await _telegramClient.AnswerCallbackQuery(update.CallbackQuery.Id);
                 }
             }
         }

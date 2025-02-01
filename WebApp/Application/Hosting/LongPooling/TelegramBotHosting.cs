@@ -13,10 +13,10 @@ namespace WebApp.Application.Hosting.LongPooling
 
         private ITelegramBotClient TelegramClient { get; init; }
 
-        private UpdateHandler Handler { get; init; }
+        private UpdateDistributor Handler { get; init; }
 
         public TelegramBotHosting(ILogger<TelegramBotHosting> logger, ITelegramBotClient botClient,
-            UpdateHandler handler)
+            UpdateDistributor handler)
         {
             Logger = logger;
             TelegramClient = botClient;

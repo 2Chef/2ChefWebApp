@@ -27,8 +27,6 @@ namespace WebApp
                 {
                     services.AddLogging()
                         .DiRegServices(Assembly.GetExecutingAssembly())
-                        .AddHostedService<TelegramBotHosting>() // запускаем LongPooling соединение с Telegram
-                        //.AddHostedService<WebhookSetupService>() // добавляем WebHook соединение
                         .AddHttpClient<ITelegramBotClient, TelegramBotClient>(client =>
                         {
                             string? token = hostContext.Configuration["Telegram:Bot:Token"];
@@ -36,6 +34,19 @@ namespace WebApp
                                 throw new InvalidOperationException("Bot token is missing in configuration.");
                             return new TelegramBotClient(token, client);
                         });
+
+                    if (hostContext.Configuration["Telegram:Hosting"]?.Equals("WebHook", StringComparison.InvariantCultureIgnoreCase) ?? false)
+                    {
+                        services.AddHostedService<WebhookSetupService>();
+                    }
+                    else if (hostContext.Configuration["Telegram:Hosting"]?.Equals("LongPooling", StringComparison.InvariantCultureIgnoreCase) ?? false)
+                    {
+                        services.AddHostedService<TelegramBotHosting>();
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Не найдена настройка в appsettings.json Telegram:Hosting");
+                    }
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

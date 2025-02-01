@@ -1,5 +1,4 @@
 ﻿using Telegram.Bot;
-using Telegram.Bot.Types;
 
 namespace WebApp.Application.Hosting.WebHook
 {
@@ -33,7 +32,7 @@ namespace WebApp.Application.Hosting.WebHook
             }
 
             _logger.LogInformation($"Setting webhook: {webhookUrl}");
-            await _botClient.SetWebhook(webhookUrl, cancellationToken: cancellationToken);
+            await _botClient.SetWebhook(webhookUrl, dropPendingUpdates: true, cancellationToken: cancellationToken);
 
         }
 
