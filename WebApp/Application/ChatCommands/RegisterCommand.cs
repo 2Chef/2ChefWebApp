@@ -1,5 +1,5 @@
 ﻿using Telegram.Bot.Types;
-using WebApp.Infrastructure.Repository;
+using WebApp.Application.Contracts.Repositories;
 using WebApp.Kernel.ChatCommandReg;
 
 namespace WebApp.Application.ChatCommands
@@ -7,9 +7,9 @@ namespace WebApp.Application.ChatCommands
     [TelegramCommand("/register")]
     internal sealed class RegisterCommand : ITelegramCommand
     {
-        CustomerRepository CustomerRepository { get; set; }
+        ICustomerRepository CustomerRepository { get; set; }
 
-        public RegisterCommand(CustomerRepository customerRepository)
+        public RegisterCommand(ICustomerRepository customerRepository)
         {
             CustomerRepository = customerRepository;
         }
