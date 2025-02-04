@@ -6,7 +6,7 @@ namespace WebApp.Kernel.DomainPathProvider
     [DiReg(ServiceLifetime.Singleton, typeof(IDomainPathProvider))]
     public class DomainPathProvider : IDomainPathProvider
     {
-        private const string ngrokApiUrl = "http://127.0.0.1:4040/api/tunnels";
+        private const string ngrokTunnelUrl = "http://127.0.0.1:4040/api/tunnels";
 
         private IWebHostEnvironment Enviroment { get; }
 
@@ -21,14 +21,22 @@ namespace WebApp.Kernel.DomainPathProvider
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    string response = await client.GetStringAsync(ngrokApiUrl);
+                    string response;
+                    try
+                    {
+                        response = await client.GetStringAsync(ngrokTunnelUrl);
+                    }
+                    catch
+                    {
+                        throw new InvalidOperationException("Не настроен туннель ngrok!");
+                    }
 
                     JObject json = JObject.Parse(response);
 
                     string? publicUrl = json["tunnels"]?[0]?["public_url"]?.ToString();
 
                     if (string.IsNullOrEmpty(publicUrl))
-                        throw new InvalidOperationException();
+                        throw new InvalidOperationException("ngrok вернул недействительный ответ");
 
                     return publicUrl;
                 }

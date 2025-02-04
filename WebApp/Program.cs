@@ -21,7 +21,8 @@ namespace WebApp
                 {
                     config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                           .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true)
-                          .AddEnvironmentVariables();
+                          .AddEnvironmentVariables()
+                          .AddCommandLine(args);
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
@@ -35,18 +36,13 @@ namespace WebApp
                             return new TelegramBotClient(token, client);
                         });
 
-                    if (hostContext.Configuration["Telegram:Hosting"]?.Equals("WebHook", StringComparison.InvariantCultureIgnoreCase) ?? false)
-                    {
-                        services.AddHostedService<WebhookSetupService>();
-                    }
-                    else if (hostContext.Configuration["Telegram:Hosting"]?.Equals("LongPooling", StringComparison.InvariantCultureIgnoreCase) ?? false)
-                    {
+                    // Получаем аргументы командной строки
+                    string[] commandLineArgs = Environment.GetCommandLineArgs();
+
+                    if (commandLineArgs.Contains("-lp"))
                         services.AddHostedService<TelegramBotHosting>();
-                    }
                     else
-                    {
-                        throw new InvalidOperationException("Не найдена настройка в appsettings.json Telegram:Hosting");
-                    }
+                        services.AddHostedService<WebhookSetupService>();
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
