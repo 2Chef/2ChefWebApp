@@ -1,5 +1,5 @@
 ﻿using Core.Kernel.DiReg;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 
 namespace WebApp.Kernel.DomainPathProvider
 {
@@ -31,9 +31,14 @@ namespace WebApp.Kernel.DomainPathProvider
                         throw new InvalidOperationException("Не настроен туннель ngrok!");
                     }
 
-                    JObject json = JObject.Parse(response);
+                    using JsonDocument json = JsonDocument.Parse(response);
 
-                    string? publicUrl = json["tunnels"]?[0]?["public_url"]?.ToString();
+                    string? publicUrl = json.RootElement
+                        .GetProperty("tunnels")
+                        .EnumerateArray()
+                        .FirstOrDefault()
+                        .GetProperty("public_url")
+                        .GetString();
 
                     if (string.IsNullOrEmpty(publicUrl))
                         throw new InvalidOperationException("ngrok вернул недействительный ответ");
