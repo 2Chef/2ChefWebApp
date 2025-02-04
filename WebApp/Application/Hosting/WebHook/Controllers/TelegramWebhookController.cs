@@ -14,7 +14,7 @@ namespace WebApp.Application.Hosting.WebHook.Controllers
             UpdateDistr = updateDistr;
         }
 
-        [HttpPost("webhook")]
+        [HttpPost("update")]
         public async Task<IActionResult> Post([FromBody]Update update)
         {
             try
