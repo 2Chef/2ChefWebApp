@@ -1,4 +1,4 @@
-﻿namespace WebApp.Kernel
+﻿namespace WebApp
 {
     public static class CmdSettings
     {

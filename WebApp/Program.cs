@@ -4,7 +4,6 @@ using System.Reflection;
 using Telegram.Bot;
 using WebApp.Application.Hosting.LongPooling;
 using WebApp.Application.Hosting.WebHook;
-using WebApp.Kernel;
 using WebApp.Kernel.BotConfigProvider;
 
 namespace WebApp
