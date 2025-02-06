@@ -24,12 +24,9 @@ namespace WebApp.Application.ChatCommands
                 [ InlineKeyboardButton.WithCallbackData("✅ Войти", "login"),  InlineKeyboardButton.WithCallbackData("🔢 Скалькулировать", "calculate") ],
                 [ InlineKeyboardButton.WithUrl("🌐 Открыть сайт", "https://www.youtube.com/watch?v=mDFBTdToRmw") ],
                 [ InlineKeyboardButton.WithCallbackData("🍣 SUSI", "susi") ],
-                [ InlineKeyboardButton.WithWebApp("🍣 SUSI", "susi") ]
             ]);
 
             ChatId chatId = new ChatId(message.From.Id);
-
-            
 
             await TelegramClient.SendMessage(chatId, "Начинаем работу", replyMarkup: inlineKeyboard);
         }

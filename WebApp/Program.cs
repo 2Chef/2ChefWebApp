@@ -1,10 +1,11 @@
-using System.Reflection;
 using Core.Kernel.DiReg;
 using Core.Kernel.Setup;
+using System.Reflection;
 using Telegram.Bot;
 using WebApp.Application.Hosting.LongPooling;
 using WebApp.Application.Hosting.WebHook;
 using WebApp.Kernel;
+using WebApp.Kernel.BotConfigProvider;
 
 namespace WebApp
 {
@@ -23,18 +24,17 @@ namespace WebApp
                     config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                           .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true)
                           .AddEnvironmentVariables()
+                          .AddUserSecrets<Program>()
                           .AddCommandLine(args);
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddLogging()
                         .DiRegServices(Assembly.GetExecutingAssembly())
-                        .AddHttpClient<ITelegramBotClient, TelegramBotClient>(client =>
+                        .AddHttpClient<ITelegramBotClient, TelegramBotClient>().AddTypedClient<ITelegramBotClient>((client, servicesProvider) =>
                         {
-                            string? token = hostContext.Configuration["Telegram:Bot:Token"];
-                            if (string.IsNullOrWhiteSpace(token))
-                                throw new InvalidOperationException("Bot token is missing in configuration.");
-                            return new TelegramBotClient(token, client);
+                            IBotConfigProvider botConfig = servicesProvider.GetRequiredService<IBotConfigProvider>();
+                            return new TelegramBotClient(botConfig.GetTlgBotToken(), client);
                         });
 
                     if (CmdSettings.IsLongPoolingConnection)
