@@ -4,6 +4,7 @@ using Core.Kernel.Setup;
 using Telegram.Bot;
 using WebApp.Application.Hosting.LongPooling;
 using WebApp.Application.Hosting.WebHook;
+using WebApp.Kernel;
 
 namespace WebApp
 {
@@ -36,18 +37,15 @@ namespace WebApp
                             return new TelegramBotClient(token, client);
                         });
 
-                    // Получаем аргументы командной строки
-                    string[] commandLineArgs = Environment.GetCommandLineArgs();
-
-                    if (commandLineArgs.Contains("-lp"))
+                    if (CmdSettings.IsLongPoolingConnection)
                         services.AddHostedService<TelegramBotHosting>();
-                    else
+                    else if (CmdSettings.IsWebHookConnection)
                         services.AddHostedService<WebhookSetupService>();
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseKestrel()
-                              .UseStartup<WebHostStartup>();
+                        .UseStartup<WebHostStartup>();
                 })
                 .UseConsoleLifetime();
         }
