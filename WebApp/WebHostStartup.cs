@@ -1,9 +1,17 @@
-﻿using System.Text.Json;
+﻿using Microsoft.Extensions.FileProviders;
+using System.Text.Json;
 
 namespace WebApp
 {
     public class WebHostStartup
     {
+        public IConfiguration Configuration { get; }
+
+        public WebHostStartup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers().AddJsonOptions(options =>
@@ -11,17 +19,9 @@ namespace WebApp
                 options.JsonSerializerOptions.PropertyNamingPolicy = new SnakeCaseNamingPolicy();
                 options.JsonSerializerOptions.PropertyNameCaseInsensitive = false;
             });
+            services.AddControllersWithViews();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
-            services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAny", builder =>
-                {
-                    builder.AllowAnyOrigin()
-                           .AllowAnyMethod()
-                           .AllowAnyHeader();
-                });
-            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -31,14 +31,25 @@ namespace WebApp
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI();
-                app.UseCors("AllowAny");
             }
+
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(env.ContentRootPath, "wwwroot", "miniapp")),
+                RequestPath = "/miniapp"
+            });
 
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapFallbackToFile(Configuration["DefaultRoute"]
+                    ?? throw new InvalidOperationException("Не задана настройка appsettings DefaultRoute"));
             });
         }
 

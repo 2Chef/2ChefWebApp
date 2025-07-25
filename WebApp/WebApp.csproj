@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>432cde00-bc6d-45f5-b6a0-b975627626a0</UserSecretsId>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +18,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\MiniApp\miniapp.esproj" />
   </ItemGroup>
-  
+
+  <Target Name="BuildReact" BeforeTargets="Build">
+    <MakeDir Directories="$(ProjectDir)wwwroot\miniapp" />
+    <Exec WorkingDirectory="..\MiniApp" Command="npm run build" />
+  </Target>
+
 </Project>

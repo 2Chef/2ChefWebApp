@@ -34,9 +34,10 @@ namespace WebApp.Application.Hosting
             }
         }
 
-        public async Task HandleErrorAsync(Exception exception, HandleErrorSource source, CancellationToken cancellationToken)
+        public Task HandleErrorAsync(Exception exception, HandleErrorSource source, CancellationToken cancellationToken)
         {
             Logger.LogError(exception.Message);
+            return Task.CompletedTask;
         }
 
         Task IUpdateHandler.HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken) =>
