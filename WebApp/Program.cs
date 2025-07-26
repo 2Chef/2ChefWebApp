@@ -5,6 +5,7 @@ using Telegram.Bot;
 using WebApp.Application.Hosting.LongPooling;
 using WebApp.Application.Hosting.WebHook;
 using WebApp.Kernel.BotConfigProvider;
+using WebApp.Kernel.TelegramBot;
 
 namespace WebApp
 {
@@ -29,11 +30,7 @@ namespace WebApp
                 {
                     services.AddLogging()
                         .DiRegServices(Assembly.GetExecutingAssembly())
-                        .AddHttpClient<ITelegramBotClient, TelegramBotClient>().AddTypedClient<ITelegramBotClient>((client, servicesProvider) =>
-                        {
-                            IBotConfigProvider botConfig = servicesProvider.GetRequiredService<IBotConfigProvider>();
-                            return new TelegramBotClient(botConfig.GetTlgBotToken(), client);
-                        });
+                        .AddTelegramBotClient();
 
                     if (CmdSettings.IsLongPoolingConnection)
                         services.AddHostedService<TelegramBotHosting>();
