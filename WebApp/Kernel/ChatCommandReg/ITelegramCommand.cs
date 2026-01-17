@@ -1,5 +1,4 @@
-﻿using Core;
-using Telegram.Bot.Types;
+﻿using Telegram.Bot.Types;
 
 namespace WebApp.Kernel.ChatCommandReg
 {

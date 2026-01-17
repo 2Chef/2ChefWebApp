@@ -1,9 +1,11 @@
-using System.Reflection;
 using Core.Kernel.DiReg;
 using Core.Kernel.Setup;
+using System.Reflection;
 using Telegram.Bot;
 using WebApp.Application.Hosting.LongPooling;
 using WebApp.Application.Hosting.WebHook;
+using WebApp.Kernel.BotConfigProvider;
+using WebApp.Kernel.TelegramBot;
 
 namespace WebApp
 {
@@ -20,27 +22,25 @@ namespace WebApp
                 .ConfigureAppConfiguration((context, config) =>
                 {
                     config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                          .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true)
-                          .AddEnvironmentVariables();
+                          .AddEnvironmentVariables()
+                          .AddUserSecrets<Program>()
+                          .AddCommandLine(args);
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddLogging()
                         .DiRegServices(Assembly.GetExecutingAssembly())
-                        .AddHostedService<TelegramBotHosting>() // запускаем LongPooling соединение с Telegram
-                        //.AddHostedService<WebhookSetupService>() // добавляем WebHook соединение
-                        .AddHttpClient<ITelegramBotClient, TelegramBotClient>(client =>
-                        {
-                            string? token = hostContext.Configuration["Telegram:Bot:Token"];
-                            if (string.IsNullOrWhiteSpace(token))
-                                throw new InvalidOperationException("Bot token is missing in configuration.");
-                            return new TelegramBotClient(token, client);
-                        });
+                        .AddTelegramBotClient();
+
+                    if (CmdSettings.IsLongPoolingConnection)
+                        services.AddHostedService<TelegramBotHosting>();
+                    else if (CmdSettings.IsWebHookConnection)
+                        services.AddHostedService<WebhookSetupService>();
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseKestrel()
-                              .UseStartup<WebHostStartup>();
+                        .UseStartup<WebHostStartup>();
                 })
                 .UseConsoleLifetime();
         }

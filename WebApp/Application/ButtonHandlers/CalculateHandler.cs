@@ -7,16 +7,16 @@ namespace WebApp.Application.ButtonHandlers
     [ButtonHandler("calculate")]
     internal sealed class CalculateHandler : IButtonHandler
     {
-        private readonly ITelegramBotClient _telegramClient;
+        private ITelegramBotClient TelegramClient { get; }
 
         public CalculateHandler(ITelegramBotClient telegramClient)
         {
-            _telegramClient = telegramClient;
+            TelegramClient = telegramClient;
         }
 
         public async Task Execute(CallbackQuery callbackData)
         {
-            await _telegramClient.SendMessage(callbackData!.From!.Id, "Хуй тебе а не калькулирование");
+            await TelegramClient.SendMessage(callbackData!.From!.Id, "Хуй тебе а не калькулирование");
         }
     }
 }

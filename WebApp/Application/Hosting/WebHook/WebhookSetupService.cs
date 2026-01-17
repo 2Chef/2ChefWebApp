@@ -1,40 +1,34 @@
 ﻿using Telegram.Bot;
-using Telegram.Bot.Types;
+using WebApp.Kernel.DomainPathProvider;
 
 namespace WebApp.Application.Hosting.WebHook
 {
     /// <summary>
     /// Запускает соединение с Telegram через WebHook, не работает одновременно с LongPooling
     /// </summary>
-    internal class WebhookSetupService : IHostedService
+    internal class WebhookSetupService(ITelegramBotClient botClient, IConfiguration configuration, ILogger<WebhookSetupService> logger,
+        IDomainPathProvider domainPathProvider) : IHostedService
     {
-        private readonly ITelegramBotClient _botClient;
-        private readonly ILogger<WebhookSetupService> _logger;
-        private readonly IConfiguration _configuration;
-
-        public WebhookSetupService(ITelegramBotClient botClient, IConfiguration configuration, ILogger<WebhookSetupService> logger)
-        {
-            _botClient = botClient;
-            _configuration = configuration;
-            _logger = logger;
-        }
+        private ITelegramBotClient BotClient { get; } = botClient;
+        private ILogger<WebhookSetupService> Logger { get; } = logger;
+        private IConfiguration Configuration { get; } = configuration;
+        private IDomainPathProvider DomainPathProvider { get; } = domainPathProvider;
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            string webhookUrl = _configuration["Telegram:WebhookUrl"]!;
+            string domain = await DomainPathProvider.GetDomain()
+                ?? throw new InvalidOperationException("Не найден текущий домен");
 
-            // Сначала удаляем текущий вебхук
-            await _botClient.DeleteWebhook(cancellationToken: cancellationToken);
+            string route = Configuration["Telegram:UpdateRoute"]
+                ?? throw new InvalidOperationException("Настройка Telegram:UpdateRoute пуста");
 
-            if (string.IsNullOrWhiteSpace(webhookUrl))
-            {
-                _logger.LogError("Webhook URL is missing in configuration.");
-                return;
-            }
+            await BotClient.DeleteWebhook(cancellationToken: cancellationToken);
 
-            _logger.LogInformation($"Setting webhook: {webhookUrl}");
-            await _botClient.SetWebhook(webhookUrl, cancellationToken: cancellationToken);
+            string fullWebhookUrl = domain + route;
 
+            Logger.LogInformation($"Setting webhook: {fullWebhookUrl}");
+
+            await BotClient.SetWebhook(fullWebhookUrl, dropPendingUpdates: true, cancellationToken: cancellationToken);
         }
 
         public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;

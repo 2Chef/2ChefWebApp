@@ -8,11 +8,11 @@ namespace WebApp.Application.ChatCommands
     [TelegramCommand("/start")]
     internal sealed class StartCommand : ITelegramCommand
     {
-        private readonly ITelegramBotClient _telegramClient;
+        private ITelegramBotClient TelegramClient { get; }
 
         public StartCommand(ITelegramBotClient telegramClient)
         {
-            _telegramClient = telegramClient;
+            TelegramClient = telegramClient;
         }
 
         public async Task Execute(Message message, CancellationToken cancellationToken)
@@ -23,11 +23,12 @@ namespace WebApp.Application.ChatCommands
             [
                 [ InlineKeyboardButton.WithCallbackData("✅ Войти", "login"),  InlineKeyboardButton.WithCallbackData("🔢 Скалькулировать", "calculate") ],
                 [ InlineKeyboardButton.WithUrl("🌐 Открыть сайт", "https://www.youtube.com/watch?v=mDFBTdToRmw") ],
+                [ InlineKeyboardButton.WithCallbackData("🍣 SUSI", "susi") ],
             ]);
 
             ChatId chatId = new ChatId(message.From.Id);
 
-            await _telegramClient.SendMessage(chatId, "Начинаем работу", replyMarkup: inlineKeyboard);
+            await TelegramClient.SendMessage(chatId, "Начинаем работу", replyMarkup: inlineKeyboard);
         }
     }
 }

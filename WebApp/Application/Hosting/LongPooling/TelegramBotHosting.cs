@@ -9,14 +9,14 @@ namespace WebApp.Application.Hosting.LongPooling
     /// </summary>
     internal class TelegramBotHosting : IHostedService
     {
-        private ILogger<TelegramBotHosting> Logger { get; init; }
+        private ILogger<TelegramBotHosting> Logger { get; }
 
-        private ITelegramBotClient TelegramClient { get; init; }
+        private ITelegramBotClient TelegramClient { get; }
 
-        private UpdateHandler Handler { get; init; }
+        private UpdateDistributor Handler { get; }
 
         public TelegramBotHosting(ILogger<TelegramBotHosting> logger, ITelegramBotClient botClient,
-            UpdateHandler handler)
+            UpdateDistributor handler)
         {
             Logger = logger;
             TelegramClient = botClient;

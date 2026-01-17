@@ -10,20 +10,14 @@ namespace WebApp.Kernel.ButtonHandlerReg
 {
     [Setup]
     [DiReg(ServiceLifetime.Singleton)]
-    public class ButtonHandlerDispatcher : ISetup
+    public class ButtonHandlerDispatcher(IServiceProvider serviceProvider, ILogger<ButtonHandlerDispatcher> logger,
+        ITelegramBotClient telegramClient) : ISetup
     {
         private readonly Dictionary<string, Type> _handlers = new();
-        private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<ButtonHandlerDispatcher> _logger;
-        private readonly ITelegramBotClient _telegramClient;
 
-        public ButtonHandlerDispatcher(IServiceProvider serviceProvider, ILogger<ButtonHandlerDispatcher> logger,
-            ITelegramBotClient telegramClient)
-        {
-            _serviceProvider = serviceProvider;
-            _logger = logger;
-            _telegramClient = telegramClient;
-        }
+        private IServiceProvider ServiceProvider { get; } = serviceProvider;
+        private ILogger<ButtonHandlerDispatcher> Logger { get; } = logger;
+        private ITelegramBotClient TelegramClient { get; } = telegramClient;
 
         public async Task Handle(string callbackKey, Update update, CancellationToken cancellationToken)
         {
@@ -34,16 +28,16 @@ namespace WebApp.Kernel.ButtonHandlerReg
                 try
                 {
                     // TODO logging 
-                    await ((IButtonHandler)_serviceProvider.GetRequiredService(typeCommand))
+                    await ((IButtonHandler)ServiceProvider.GetRequiredService(typeCommand))
                         .Execute(update.CallbackQuery);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Unhadnled exception Telegram ButtonHandler: {callbackKey}");
+                    Logger.LogError(ex, "Unhandled exception in Telegram ButtonHandler for callbackKey: {CallbackKey}", callbackKey);
                 }
                 finally
                 {
-                    await _telegramClient.AnswerCallbackQuery(callbackKey);
+                    await TelegramClient.AnswerCallbackQuery(update.CallbackQuery.Id);
                 }
             }
         }
