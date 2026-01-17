@@ -9,8 +9,7 @@ namespace WebApp.Infrastructure.Repository
     {
         private readonly ISet<Customer> _customers = new HashSet<Customer>();
 
-        public void RegisterUser(Customer customers) => _customers.Add(customers);
-
-        public IEnumerable<Customer> GetAllUsers() => _customers;
+        public async Task RegisterUser(Customer customers) =>
+            await Task.Run(() => _customers.Add(customers));
     }
 }
