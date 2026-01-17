@@ -1,8 +1,9 @@
-﻿namespace WebApp.Application.Contracts.Repositories
+﻿using WebApp.Domain.Entities;
+
+namespace WebApp.Application.Contracts.Repositories
 {
-    // Работаем с репозиторий только через интерфейс
     public interface ICustomerRepository
     {
-        // TODO сюда прокидываете методы которые вам нужны для сохранения пользователя
+        Task RegisterUser(Customer customers);
     }
 }

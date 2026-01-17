@@ -6,21 +6,13 @@ namespace WebApp.Application.Hosting.WebHook
     /// <summary>
     /// Запускает соединение с Telegram через WebHook, не работает одновременно с LongPooling
     /// </summary>
-    internal class WebhookSetupService : IHostedService
+    internal class WebhookSetupService(ITelegramBotClient botClient, IConfiguration configuration, ILogger<WebhookSetupService> logger,
+        IDomainPathProvider domainPathProvider) : IHostedService
     {
-        private ITelegramBotClient BotClient { get; }
-        private ILogger<WebhookSetupService> Logger { get; }
-        private IConfiguration Configuration { get; }
-        private IDomainPathProvider DomainPathProvider { get; }
-
-        public WebhookSetupService(ITelegramBotClient botClient, IConfiguration configuration, ILogger<WebhookSetupService> logger,
-            IDomainPathProvider domainPathProvider)
-        {
-            BotClient = botClient;
-            Configuration = configuration;
-            Logger = logger;
-            DomainPathProvider = domainPathProvider;
-        }
+        private ITelegramBotClient BotClient { get; } = botClient;
+        private ILogger<WebhookSetupService> Logger { get; } = logger;
+        private IConfiguration Configuration { get; } = configuration;
+        private IDomainPathProvider DomainPathProvider { get; } = domainPathProvider;
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {

@@ -1,22 +1,18 @@
 ﻿using Telegram.Bot.Types;
 using WebApp.Application.Contracts.Repositories;
+using WebApp.Domain.Entities;
 using WebApp.Kernel.ChatCommandReg;
 
 namespace WebApp.Application.ChatCommands
 {
     [TelegramCommand("/register")]
-    internal sealed class RegisterCommand : ITelegramCommand
+    internal sealed class RegisterCommand(ICustomerRepository customerRepository) : ITelegramCommand
     {
-        private ICustomerRepository CustomerRepository { get; }
-
-        public RegisterCommand(ICustomerRepository customerRepository)
-        {
-            CustomerRepository = customerRepository;
-        }
+        private ICustomerRepository CustomerRepository { get; } = customerRepository;
 
         public async Task Execute(Message message, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await CustomerRepository.RegisterUser(new Customer(message!.From!.Id, message.From.Username!));
         }
     }
 }
