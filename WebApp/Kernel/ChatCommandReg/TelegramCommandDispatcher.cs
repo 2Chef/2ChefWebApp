@@ -9,18 +9,12 @@ namespace WebApp.Kernel.ChatCommandReg
 {
     [Setup]
     [DiReg(ServiceLifetime.Singleton)]
-    public class TelegramCommandDispatcher : ISetup
+    public class TelegramCommandDispatcher(IServiceProvider serviceProvider, ILogger<TelegramCommandDispatcher> logger) : ISetup
     {
         private readonly Dictionary<string, Type> _commands = new();
 
-        private IServiceProvider ServiceProvider { get; }
-        private ILogger<TelegramCommandDispatcher> Logger { get; }
-
-        public TelegramCommandDispatcher(IServiceProvider serviceProvider, ILogger<TelegramCommandDispatcher> logger)
-        {
-            ServiceProvider = serviceProvider;
-            Logger = logger;
-        }
+        private IServiceProvider ServiceProvider { get; } = serviceProvider;
+        private ILogger<TelegramCommandDispatcher> Logger { get; } = logger;
 
         public async Task HandleCommand(Update update, CancellationToken cancellationToken)
         {
