@@ -13,7 +13,7 @@ namespace WebApp.Kernel.ButtonHandlerReg
     public class ButtonHandlerDispatcher(IServiceProvider serviceProvider, ILogger<ButtonHandlerDispatcher> logger,
         ITelegramBotClient telegramClient) : ISetup
     {
-        private readonly Dictionary<string, Type> _handlers = new();
+        private readonly Dictionary<string, Type> _handlers = [];
 
         private IServiceProvider ServiceProvider { get; } = serviceProvider;
         private ILogger<ButtonHandlerDispatcher> Logger { get; } = logger;
@@ -37,7 +37,7 @@ namespace WebApp.Kernel.ButtonHandlerReg
                 }
                 finally
                 {
-                    await TelegramClient.AnswerCallbackQuery(update.CallbackQuery.Id);
+                    await TelegramClient.AnswerCallbackQuery(update.CallbackQuery.Id, cancellationToken: cancellationToken);
                 }
             }
         }
