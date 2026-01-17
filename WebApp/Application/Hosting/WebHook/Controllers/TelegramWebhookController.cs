@@ -5,14 +5,9 @@ namespace WebApp.Application.Hosting.WebHook.Controllers
 {
     [ApiController]
     [Route("api/telegram")]
-    public class TelegramWebhookController : ControllerBase
+    public class TelegramWebhookController(UpdateDistributor updateDistr) : ControllerBase
     {
-        private UpdateDistributor UpdateDistr { get; }
-
-        public TelegramWebhookController(UpdateDistributor updateDistr)
-        {
-            UpdateDistr = updateDistr;
-        }
+        private UpdateDistributor UpdateDistr { get; } = updateDistr;
 
         [HttpPost("update")]
         public async Task<IActionResult> Post([FromBody]Update update)
@@ -24,7 +19,6 @@ namespace WebApp.Application.Hosting.WebHook.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
-                throw;
             }
 
             return Ok();
